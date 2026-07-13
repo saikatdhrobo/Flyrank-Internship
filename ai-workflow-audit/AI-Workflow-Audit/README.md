@@ -94,12 +94,4 @@ These tasks build on the workflow audit and will be executed in the next three a
 
 ---
 
-## 5. Placeholder Notice
 
-> ![Claude Project Screenshot](./assets/claude-project-screenshot-placeholder.png)
->
-> *Replace this placeholder image with an actual screenshot of your Claude Project configuration (showing the project name and custom instructions) before final submission.*
-
----
-
-*End of FL-01 submission.*
