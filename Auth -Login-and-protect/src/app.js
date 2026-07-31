@@ -1,4 +1,5 @@
 const express = require("express");
+const authRoutes = require("./routes/auth.routes");
 
 function createApp() {
   const app = express();
@@ -8,6 +9,9 @@ function createApp() {
   app.get("/", (req, res) => {
     res.json({ message: "Auth API is running" });
   });
+
+  // Open auth routes: sign up and log in.
+  app.use("/auth", authRoutes);
 
   return app;
 }
