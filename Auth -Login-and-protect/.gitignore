@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Environment variables — NEVER commit your real Supabase keys
+.env
+.env.local
+
+# Logs
+npm-debug.log*
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

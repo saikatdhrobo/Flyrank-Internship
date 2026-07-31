@@ -1,0 +1,28 @@
+{
+  "name": "auth-login-and-protect",
+  "version": "1.0.0",
+  "description": "A secure Express API with Supabase Auth — sign up, log in, log out, and bearer-token-protected routes, documented in Swagger UI.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [
+    "api",
+    "express",
+    "supabase",
+    "auth",
+    "jwt",
+    "bearer",
+    "swagger"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.1",
+    "dotenv": "^17.2.0",
+    "express": "^5.2.1",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
