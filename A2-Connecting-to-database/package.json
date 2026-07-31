@@ -1,0 +1,24 @@
+{
+  "name": "a2-connecting-to-database",
+  "version": "1.0.0",
+  "description": "A CRUD task API backed by SQLite — the same API as before, but data now survives server restarts.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "keywords": [
+    "api",
+    "express",
+    "sqlite",
+    "crud",
+    "tasks",
+    "rest"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "better-sqlite3": "^13.0.2",
+    "express": "^5.2.1"
+  }
+}
