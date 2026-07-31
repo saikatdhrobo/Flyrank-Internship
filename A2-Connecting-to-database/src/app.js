@@ -1,11 +1,13 @@
 const express = require('express');
 const taskRoutes = require('./routes/task.routes');
+const statsRoutes = require('./routes/stats.routes');
 
 const app = express();
 
 app.use(express.json());
 
 app.use('/tasks', taskRoutes);
+app.use('/stats', statsRoutes);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });

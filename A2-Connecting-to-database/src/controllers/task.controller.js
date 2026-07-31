@@ -53,6 +53,15 @@ class TaskController {
       next(err);
     }
   };
+
+  getStats = async (req, res, next) => {
+    try {
+      const stats = await this.service.getStats();
+      res.json(stats);
+    } catch (err) {
+      next(err);
+    }
+  };
 }
 
 module.exports = TaskController;

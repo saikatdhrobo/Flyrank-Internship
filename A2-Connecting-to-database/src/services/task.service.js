@@ -12,8 +12,29 @@ class TaskService {
     this.repository = repository;
   }
 
-  async getAllTasks() {
-    return this.repository.getAllTasks();
+  async getAllTasks(query = {}) {
+    const { search, done, sort } = query;
+
+    let doneFilter;
+    if (done !== undefined) {
+      if (done === 'true' || done === true) doneFilter = true;
+      else if (done === 'false' || done === false) doneFilter = false;
+      else {
+        const err = new Error('done must be "true" or "false"');
+        err.status = 400;
+        throw err;
+      }
+    }
+
+    const searchFilter =
+      typeof search === 'string' && search.trim().length > 0 ? search.trim() : undefined;
+
+    return this.repository.getAllTasks({
+      search: searchFilter,
+      done: doneFilter,
+      // Only an explicit "title" request sorts alphabetically.
+      sort: sort === 'title' ? 'title' : undefined,
+    });
   }
 
   async getTaskById(id) {
@@ -88,6 +109,10 @@ class TaskService {
       throw err;
     }
     return task;
+  }
+
+  getStats() {
+    return this.repository.getStats();
   }
 }
 

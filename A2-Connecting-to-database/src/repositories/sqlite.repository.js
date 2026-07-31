@@ -7,8 +7,29 @@ function mapRow(row) {
 }
 
 class SqliteRepository extends RepositoryInterface {
-  async getAllTasks() {
-    const rows = db.prepare('SELECT * FROM tasks ORDER BY id').all();
+  async getAllTasks({ search, done, sort } = {}) {
+    const conditions = [];
+    const params = [];
+
+    if (search) {
+      conditions.push('title LIKE ?');
+      params.push(`%${search}%`);
+    }
+    if (done !== undefined) {
+      conditions.push('done = ?');
+      params.push(done ? 1 : 0);
+    }
+
+    // Whitelist the ORDER BY column so user input can never reach the SQL text.
+    const orderBy = sort === 'title' ? 'title COLLATE NOCASE' : 'id';
+
+    let sql = 'SELECT * FROM tasks';
+    if (conditions.length > 0) {
+      sql += ` WHERE ${conditions.join(' AND ')}`;
+    }
+    sql += ` ORDER BY ${orderBy}`;
+
+    const rows = db.prepare(sql).all(...params);
     return rows.map(mapRow);
   }
 
@@ -41,6 +62,12 @@ class SqliteRepository extends RepositoryInterface {
 
     db.prepare('DELETE FROM tasks WHERE id = ?').run(id);
     return existing;
+  }
+
+  async getStats() {
+    const { total } = db.prepare('SELECT COUNT(*) AS total FROM tasks').get();
+    const { done } = db.prepare('SELECT COUNT(*) AS done FROM tasks WHERE done = 1').get();
+    return { total, done, pending: total - done };
   }
 }
 
