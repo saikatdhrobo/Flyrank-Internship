@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const { supabase } = require("../config");
+const { requireAuth } = require("../middleware/auth.middleware");
 
 const router = Router();
 
@@ -61,6 +62,26 @@ router.post("/login", async (req, res) => {
     access_token: data.session.access_token,
     refresh_token: data.session.refresh_token,
   });
+});
+
+/**
+ * POST /auth/logout
+ * Protected route (reuses requireAuth middleware). Terminates the session.
+ * Returns 204 No Content on success.
+ */
+router.post("/logout", requireAuth, async (req, res) => {
+  // Stateless server-side JWTs can't be force-revoked, but we ask Supabase
+  // to sign the session out (clients are expected to discard their tokens).
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    if (error.status) {
+      return res.status(401).json({ error: "Invalid or expired token" });
+    }
+    return res.status(500).json({ error: "Unable to reach Supabase Auth" });
+  }
+
+  return res.status(204).end();
 });
 
 module.exports = router;
