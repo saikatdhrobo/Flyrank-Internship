@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const { supabase } = require("../config");
 
 const router = Router();
 
@@ -17,18 +18,30 @@ function extractBearerToken(req) {
 
 /**
  * GET /protected/profile
- * Stage 2: only checks that a bearer token was supplied — the token is
- * NOT verified yet (that happens in Stage 3).
+ * Stage 3: verifies the bearer token against Supabase and, on success,
+ * returns the user's secure metadata (id, email, created_at).
  */
-router.get("/profile", (req, res) => {
+router.get("/profile", async (req, res) => {
   const token = extractBearerToken(req);
 
   if (!token) {
     return res.status(401).json({ error: "Access token required" });
   }
 
-  // Stage 3 will replace this placeholder with real token verification.
-  return res.status(200).json({ message: "Token present but not yet verified" });
+  // The guard inspects the pass: getUser() asks Supabase to validate the JWT.
+  const { data, error } = await supabase.auth.getUser(token);
+
+  if (error) {
+    // Expired, tampered with, or otherwise invalid token (real GoTrue error
+    // carries a status). A missing status means the IdP was unreachable.
+    if (error.status) {
+      return res.status(401).json({ error: "Invalid or expired token" });
+    }
+    return res.status(500).json({ error: "Unable to reach Supabase Auth" });
+  }
+
+  const { id, email, created_at } = data.user;
+  return res.status(200).json({ id, email, created_at });
 });
 
 module.exports = router;
