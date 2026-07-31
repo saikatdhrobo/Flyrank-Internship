@@ -23,6 +23,25 @@ class SqliteRepository extends RepositoryInterface {
       .run(task.title, task.done ? 1 : 0);
     return this.getTaskById(result.lastInsertRowid);
   }
+
+  async updateTask(id, updates) {
+    const existing = await this.getTaskById(id);
+    if (!existing) return null;
+
+    const title = updates.title !== undefined ? updates.title : existing.title;
+    const done = updates.done !== undefined ? (updates.done ? 1 : 0) : existing.done;
+
+    db.prepare('UPDATE tasks SET title = ?, done = ? WHERE id = ?').run(title, done, id);
+    return this.getTaskById(id);
+  }
+
+  async deleteTask(id) {
+    const existing = await this.getTaskById(id);
+    if (!existing) return null;
+
+    db.prepare('DELETE FROM tasks WHERE id = ?').run(id);
+    return existing;
+  }
 }
 
 module.exports = SqliteRepository;

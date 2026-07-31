@@ -35,6 +35,24 @@ class TaskController {
       next(err);
     }
   };
+
+  update = async (req, res, next) => {
+    try {
+      const task = await this.service.updateTask(req.params.id, req.body);
+      res.json(task);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  delete = async (req, res, next) => {
+    try {
+      const task = await this.service.deleteTask(req.params.id);
+      res.json(task);
+    } catch (err) {
+      next(err);
+    }
+  };
 }
 
 module.exports = TaskController;
