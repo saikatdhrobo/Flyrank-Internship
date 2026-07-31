@@ -32,6 +32,19 @@ class TaskService {
     }
     return task;
   }
+
+  async createTask(data) {
+    if (!data.title || typeof data.title !== 'string' || data.title.trim().length === 0) {
+      const err = new Error('Title is required and must be a non-empty string');
+      err.status = 400;
+      throw err;
+    }
+
+    return this.repository.createTask({
+      title: data.title.trim(),
+      done: data.done !== undefined ? !!data.done : false,
+    });
+  }
 }
 
 module.exports = TaskService;

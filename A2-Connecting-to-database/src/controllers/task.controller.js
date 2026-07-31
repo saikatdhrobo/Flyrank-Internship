@@ -26,6 +26,15 @@ class TaskController {
       next(err);
     }
   };
+
+  create = async (req, res, next) => {
+    try {
+      const task = await this.service.createTask(req.body);
+      res.status(201).json(task);
+    } catch (err) {
+      next(err);
+    }
+  };
 }
 
 module.exports = TaskController;

@@ -16,6 +16,13 @@ class SqliteRepository extends RepositoryInterface {
     const row = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
     return row ? mapRow(row) : null;
   }
+
+  async createTask(task) {
+    const result = db
+      .prepare('INSERT INTO tasks (title, done) VALUES (?, ?)')
+      .run(task.title, task.done ? 1 : 0);
+    return this.getTaskById(result.lastInsertRowid);
+  }
 }
 
 module.exports = SqliteRepository;
