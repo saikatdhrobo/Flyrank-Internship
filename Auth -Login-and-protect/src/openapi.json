@@ -1,0 +1,159 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Auth — Login & Protect API",
+    "version": "1.0.0",
+    "description": "Secure Express API backed by Supabase Auth. Sign up, log in, and log out, with bearer-token-protected routes. Use the **Authorize** button to paste your JWT (from `POST /auth/login`) and then call the `/protected/*` endpoints."
+  },
+  "servers": [
+    { "url": "http://localhost:3000", "description": "Local development" }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Health check",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "API is alive",
+            "content": {
+              "application/json": {
+                "example": { "message": "Auth API is running" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "summary": "Create a new user account",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "test@example.com" },
+                  "password": { "type": "string", "minLength": 6, "example": "password123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" },
+          "400": { "description": "Missing or invalid input" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Authenticate and receive JWT tokens",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "test@example.com" },
+                  "password": { "type": "string", "example": "password123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success — access_token + refresh_token",
+            "content": {
+              "application/json": {
+                "example": {
+                  "access_token": "eyJhbGciOiJIUzI1NiIs...",
+                  "refresh_token": "eyJhbGciOiJIUzI1NiIs..."
+                }
+              }
+            }
+          },
+          "400": { "description": "Missing email or password" },
+          "401": { "description": "Invalid login credentials" }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Terminate the current session (protected)",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "204": { "description": "Successfully logged out (no content)" },
+          "401": { "description": "Missing, invalid, or expired token" }
+        }
+      }
+    },
+    "/public/info": {
+      "get": {
+        "summary": "Public information — no auth required",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Public message",
+            "content": {
+              "application/json": {
+                "example": { "message": "Welcome stranger! This info is public." }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/protected/profile": {
+      "get": {
+        "summary": "Read the authenticated user's profile (protected)",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "User metadata",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "11111111-2222-3333-4444-555555555555",
+                  "email": "test@example.com",
+                  "created_at": "2026-01-01T00:00:00.000Z"
+                }
+              }
+            }
+          },
+          "401": { "description": "Access token required / invalid or expired token" }
+        }
+      }
+    },
+    "/protected/dashboard": {
+      "get": {
+        "summary": "Authenticated user's dashboard (protected)",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Welcome message for the authenticated user"
+          },
+          "401": { "description": "Access token required / invalid or expired token" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Paste the access_token returned by POST /auth/login."
+      }
+    }
+  }
+}
