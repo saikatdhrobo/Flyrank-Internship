@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A6 AI Background Job Queue Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-logo">F</div>
+        <div class="brand-name">
+          <h1>FlyRank Job Queue</h1>
+          <p>Asynchronous AI Worker Pipeline</p>
+        </div>
+      </div>
+      <div class="worker-pulse">
+        <span class="pulse-dot"></span>
+        <span>Worker Polling Active</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Column: Submit Job & Stats -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <!-- Submit Job Card -->
+      <section class="glass-card" id="submit-card">
+        <h2 class="card-title">Queue a Decision Job</h2>
+        <form id="job-form">
+          <div class="form-group">
+            <label for="query-input">User Query</label>
+            <textarea id="query-input" class="form-control" rows="3" placeholder="e.g. Can I please get my money back? I am not satisfied with the product." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="prompt-input">Classification Criteria Prompt</label>
+            <input type="text" id="prompt-input" class="form-control" placeholder="e.g. Is the user asking for a refund or billing help?" required>
+          </div>
+
+          <div class="form-group">
+            <label for="idempotency-input">Idempotency Key</label>
+            <div class="input-with-btn">
+              <input type="text" id="idempotency-input" class="form-control" placeholder="Optional duplicate check key">
+              <button type="button" class="btn-secondary-sm" id="gen-key-btn">Generate</button>
+            </div>
+            <small style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; display: block;">
+              Jobs submitted with the same key return the cached results instantly.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="retries-input">Max Retries Limit</label>
+            <input type="number" id="retries-input" class="form-control" min="1" max="10" value="3" required>
+          </div>
+
+          <div class="checkbox-group" id="fail-toggle-group">
+            <input type="checkbox" id="fail-input">
+            <span>Force LLM Call to Fail (Simulate Retries)</span>
+          </div>
+
+          <button type="submit" class="btn-primary">Queue Background Job</button>
+        </form>
+      </section>
+
+      <!-- Stats Card -->
+      <section class="glass-card">
+        <div class="card-title">
+          <span>Queue Statistics</span>
+          <button class="btn-clear-db" id="clear-db-btn">Clear Data</button>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-val stat-pending" id="stats-pending">0</div>
+            <div class="stat-label">Pending</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val stat-processing" id="stats-processing">0</div>
+            <div class="stat-label">Running</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val stat-completed" id="stats-completed">0</div>
+            <div class="stat-label">Done</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val stat-failed" id="stats-failed">0</div>
+            <div class="stat-label">Failed</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Column: Queue & Active Alerts -->
+    <div class="dashboard-content">
+      <!-- Main Jobs Queue -->
+      <section class="glass-card" style="display: flex; flex-direction: column;">
+        <h2 class="card-title">Background Jobs Queue</h2>
+        <div class="jobs-container" id="jobs-list">
+          <div class="empty-queue">
+            <p>No jobs in queue. Submit a decision job to start background execution.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- System Alerts Column -->
+      <section class="glass-card" style="height: fit-content;">
+        <h2 class="card-title" style="color: var(--failed);">
+          <span>Active Alerts</span>
+          <span style="font-size: 0.75rem; background: rgba(239, 68, 68, 0.15); color: var(--failed); padding: 0.1rem 0.5rem; border-radius: 9999px;" id="alerts-count">0</span>
+        </h2>
+        <div class="alerts-list" id="alerts-container">
+          <div class="alert-empty">
+            All systems operational. No active alerts.
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
