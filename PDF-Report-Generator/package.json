@@ -1,0 +1,26 @@
+{
+  "name": "pdf-report-generator",
+  "version": "1.0.0",
+  "description": "Background-job-driven PDF report generator with scheduled task support and modern dashboard UI.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/db/seed.js"
+  },
+  "keywords": [
+    "express",
+    "sqlite",
+    "pdfkit",
+    "background-job",
+    "node-cron"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^13.0.2",
+    "express": "^5.2.1",
+    "node-cron": "^3.0.3",
+    "pdfkit": "^0.16.0"
+  }
+}

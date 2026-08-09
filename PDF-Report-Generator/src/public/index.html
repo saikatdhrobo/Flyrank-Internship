@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlyRank — Automated PDF Report Pipeline</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="glow-bg-1"></div>
+  <div class="glow-bg-2"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-box">
+          <i data-lucide="file-bar-chart-2"></i>
+        </div>
+        <div class="brand-text">
+          <h1>FlyRank Analytics</h1>
+          <p>Automated PDF Report Pipeline & Background Worker</p>
+        </div>
+      </div>
+      <div class="system-status">
+        <div class="status-badge" id="worker-status">
+          <span class="pulse-dot"></span>
+          <span>Worker: Active</span>
+        </div>
+        <div class="status-badge" id="cron-status">
+          <i data-lucide="clock"></i>
+          <span>Cron: Listening</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- KPI Grid -->
+    <section class="kpi-grid">
+      <div class="kpi-card glass-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Total Revenue</span>
+          <div class="kpi-icon icon-purple"><i data-lucide="dollar-sign"></i></div>
+        </div>
+        <div class="kpi-value" id="kpi-revenue">$0.00</div>
+        <div class="kpi-footer">Cumulative store earnings</div>
+      </div>
+      
+      <div class="kpi-card glass-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Total Orders</span>
+          <div class="kpi-icon icon-blue"><i data-lucide="shopping-bag"></i></div>
+        </div>
+        <div class="kpi-value" id="kpi-orders">0</div>
+        <div class="kpi-footer">Transactions processed</div>
+      </div>
+
+      <div class="kpi-card glass-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Customers</span>
+          <div class="kpi-icon icon-cyan"><i data-lucide="users"></i></div>
+        </div>
+        <div class="kpi-value" id="kpi-customers">0</div>
+        <div class="kpi-footer">Unique buyer accounts</div>
+      </div>
+
+      <div class="kpi-card glass-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Items Sold</span>
+          <div class="kpi-icon icon-green"><i data-lucide="box"></i></div>
+        </div>
+        <div class="kpi-value" id="kpi-items">0</div>
+        <div class="kpi-footer">Stock units dispatched</div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Layout -->
+    <div class="workspace-grid">
+      <!-- Left Column: Controls & Schedules -->
+      <div class="workspace-column">
+        <!-- Trigger Card -->
+        <div class="glass-card action-card">
+          <h2>On-Demand Generator</h2>
+          <p class="section-desc">Instantly compile all database sales metrics, perform SQL aggregations, and render a multi-page PDF document asynchronously.</p>
+          
+          <button id="btn-generate" class="btn btn-primary">
+            <i data-lucide="file-text"></i>
+            <span>Generate PDF Report</span>
+          </button>
+
+          <!-- Dynamic Progress Widget -->
+          <div id="progress-widget" class="progress-widget hidden">
+            <div class="progress-details">
+              <span id="progress-status" class="progress-status">Queued in background...</span>
+              <span id="progress-percent" class="progress-percent">0%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div class="job-id-label">Job ID: <span id="lbl-job-id">-</span></div>
+          </div>
+        </div>
+
+        <!-- Schedules Card -->
+        <div class="glass-card schedule-card">
+          <h2>Active Cron Schedules</h2>
+          <p class="section-desc">Automated system crons defined in the schedules table. These trigger PDF report compiler jobs autonomously.</p>
+          <div class="schedule-list" id="schedules-container">
+            <!-- Dynamically populated -->
+            <div class="loading-spinner"><i data-lucide="loader-2" class="spin"></i> Loading schedules...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Database Feed & Archives -->
+      <div class="workspace-column">
+        <!-- Archives Table -->
+        <div class="glass-card archive-card">
+          <h2>Report Download Archives</h2>
+          <p class="section-desc">Click to retrieve previously exported reports. Saved directly in the server's local file storage.</p>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Generated At</th>
+                  <th>Job ID</th>
+                  <th>Format</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="archives-tbody">
+                <tr>
+                  <td colspan="4" class="empty-state">No PDF reports compiled yet. Click generate above.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Database Transactions -->
+        <div class="glass-card feed-card">
+          <h2>Store Transaction Log</h2>
+          <p class="section-desc">Live records queried directly from the SQLite database. Used for report aggregations.</p>
+          <div class="table-container">
+            <table class="data-table font-sm">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Date</th>
+                  <th class="align-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="feed-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Background Worker Activity Console -->
+    <section class="glass-card console-card">
+      <div class="console-header">
+        <div class="console-title">
+          <i data-lucide="terminal"></i>
+          <span>Background Worker Execution Trace</span>
+        </div>
+        <button id="btn-clear-logs" class="btn-icon" title="Clear console view"><i data-lucide="trash-2"></i></button>
+      </div>
+      <div class="console-terminal" id="console-terminal">
+        <div class="console-line system">[SYSTEM] Console monitoring active. Listening for worker polling loops...</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Script initialization -->
+  <script src="index.js"></script>
+  <script>
+    // Initialize Lucide icons on document load
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
