@@ -1,0 +1,16 @@
+# Scraper cache
+cache/
+
+# Local configuration / outputs (except sample outputs)
+# Note: we will commit output/books.json and output/run-report.json as sample outputs.
+# But we don't want cache/ to sneak in.
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+ENV/
